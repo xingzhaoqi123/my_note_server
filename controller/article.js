@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const articleModel = require("../model/article");
-const categoryModel = require('../model/category')
+const categoryModel = require("../model/category");
 router.post("/article", async (req, res, next) => {
     try {
         if (req.session.user) {
@@ -35,6 +35,24 @@ router.post("/article", async (req, res, next) => {
         next(err);
     }
 });
+router.get("/article/:id", (req, res) => {
+    const { id } = req.params;
+    articleModel
+        .findById(id)
+        .populate({
+            path: "author",
+            select: "-password -email"
+        })  
+        .populate({
+            path: "category"
+        })
+        .then(data => {
+            res.json({
+                code: 200,
+                data
+            });
+        });
+});
 router.get("/article", (req, res) => {
     let { pn = 1, size = 10 } = req.query;
     pn = parseInt(pn);
@@ -45,7 +63,7 @@ router.get("/article", (req, res) => {
         .limit(size)
         .populate({
             path: "author",
-            select:'-password -email'
+            select: "-password -email"
         })
         .populate({
             path: "category"
@@ -54,7 +72,7 @@ router.get("/article", (req, res) => {
             res.json({
                 code: 200,
                 data,
-                count:data.length
+                count: data.length
             });
         });
 });

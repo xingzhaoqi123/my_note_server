@@ -10,7 +10,7 @@ router.get("/category", (req, res) => {
         });
     });
 });
-router.get("/category:id", (req, res) => {
+router.get("/category/:id", (req, res) => {
     let { id } = req.params;
     categoryModel.findById(id).then(data => {
         res.json({

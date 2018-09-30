@@ -7,25 +7,35 @@ router.post("/user", async (req, res, next) => {
         const { username, email, password } = req.body;
         const number = Math.ceil(Math.random() * 9);
         const avatar = `http://pbl.yaojunrong.com/avatar${number}.jpg`;
-
-        if (password && password.length >= 5) {
-            const data = await userModel.create({
-                username,
-                email,
-                password,
-                avatar
-            });
-            res.json({
-                code: 200,
-                msg: "注册成功"
-            });
+        if (username) {
+            if (password && password.length >= 5) {
+                const data = await userModel.create({
+                    username,
+                    email,
+                    password,
+                    avatar
+                });
+                res.json({
+                    code: 200,
+                    msg: "注册成功"
+                });
+            } else {
+                res.json({
+                    code: 400,
+                    msg: "密码长度不符合要求。"
+                });
+            }
         } else {
-            throw "密码长度不符合要求。";
+            res.json({
+                code: 400,
+                msg: "请输入用户名"
+            });
         }
     } catch (err) {
         res.json({
             code: 400,
-            msg: `缺少必要参数or${err}`
+            msg: `缺少必要参数`,
+            err
         });
         next(err);
     }
@@ -40,7 +50,7 @@ router.get("/logout", (req, res) => {
     } else {
         res.json({
             code: 403,
-            msg: "不能在未登录状态写退出登录"
+            msg: "不能在未登录状态下退出登录"
         });
     }
 });
